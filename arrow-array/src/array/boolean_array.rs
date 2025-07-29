@@ -284,6 +284,10 @@ impl Array for BooleanArray {
         self
     }
 
+    fn into_any(self: Arc<Self>) -> Arc<dyn Any + Send + Sync> {
+        self
+    }
+
     fn to_data(&self) -> ArrayData {
         self.clone().into()
     }

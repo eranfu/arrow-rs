@@ -306,6 +306,10 @@ impl<T: RunEndIndexType> Array for RunArray<T> {
         self
     }
 
+    fn into_any(self: Arc<Self>) -> Arc<dyn Any + Send + Sync> {
+        self
+    }
+
     fn to_data(&self) -> ArrayData {
         self.clone().into()
     }
@@ -563,6 +567,10 @@ impl<'a, R: RunEndIndexType, V> TypedRunArray<'a, R, V> {
 impl<R: RunEndIndexType, V: Sync> Array for TypedRunArray<'_, R, V> {
     fn as_any(&self) -> &dyn Any {
         self.run_array
+    }
+
+    fn into_any(self: Arc<Self>) -> Arc<dyn Any + Send + Sync> {
+        unreachable!()
     }
 
     fn to_data(&self) -> ArrayData {
