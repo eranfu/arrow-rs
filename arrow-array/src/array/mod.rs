@@ -104,6 +104,34 @@ pub trait Array: std::fmt::Debug + Send + Sync {
     /// ```
     fn as_any(&self) -> &dyn Any;
 
+    /// Converts the array into [`Any`] for downcasting to concrete implementations.
+    /// Consumes self during conversion unlike `as_any`.
+    ///
+    /// # Example:
+    ///
+    /// ```
+    /// # use std::sync::Arc;
+    /// # use arrow_array::{Int32Array, RecordBatch};
+    /// # use arrow_schema::{Schema, Field, DataType, ArrowError};
+    ///
+    /// let id = Int32Array::from(vec![1, 2, 3, 4, 5]);
+    /// let batch = RecordBatch::try_new(
+    ///     Arc::new(Schema::new(vec![Field::new("id", DataType::Int32, false)])),
+    ///     vec![Arc::new(id)]
+    /// ).unwrap();
+    ///
+    /// let int32array = batch
+    ///     .column(0)
+    ///     .clone()
+    ///     .into_any()
+    ///     .downcast::<Int32Array>()
+    ///     .expect("Failed to downcast");
+    ///
+    /// let array = int32array.into_iter().flatten().collect::<Vec<_>>();
+    /// assert_eq!(&array, &[1,2,3,4,5]);
+    /// ```
+    fn into_any(self: Arc<Self>) -> Arc<dyn Any + Send + Sync>;
+
     /// Returns the underlying data of this array
     fn to_data(&self) -> ArrayData;
 
@@ -347,6 +375,10 @@ impl Array for ArrayRef {
         self.as_ref().as_any()
     }
 
+    fn into_any(self: Arc<Self>) -> Arc<dyn Any + Send + Sync> {
+        unreachable!("Users should not create an Arc<Arc<dyn Array>>")
+    }
+
     fn to_data(&self) -> ArrayData {
         self.as_ref().to_data()
     }
@@ -424,6 +456,10 @@ impl Array for ArrayRef {
 impl<T: Array> Array for &T {
     fn as_any(&self) -> &dyn Any {
         T::as_any(self)
+    }
+
+    fn into_any(self: Arc<Self>) -> Arc<dyn Any + Send + Sync> {
+        unreachable!("Users can not create a Arc<&T>")
     }
 
     fn to_data(&self) -> ArrayData {

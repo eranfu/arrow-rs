@@ -702,6 +702,10 @@ impl<T: ArrowDictionaryKeyType> Array for DictionaryArray<T> {
         self
     }
 
+    fn into_any(self: Arc<Self>) -> Arc<dyn Any + Send + Sync> {
+        self
+    }
+
     fn to_data(&self) -> ArrayData {
         self.clone().into()
     }
@@ -859,6 +863,10 @@ impl<'a, K: ArrowDictionaryKeyType, V> TypedDictionaryArray<'a, K, V> {
 impl<K: ArrowDictionaryKeyType, V: Sync> Array for TypedDictionaryArray<'_, K, V> {
     fn as_any(&self) -> &dyn Any {
         self.dictionary
+    }
+
+    fn into_any(self: Arc<Self>) -> Arc<dyn Any + Send + Sync> {
+        unreachable!()
     }
 
     fn to_data(&self) -> ArrayData {

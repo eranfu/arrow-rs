@@ -81,6 +81,10 @@ impl Array for NullArray {
         self
     }
 
+    fn into_any(self: Arc<Self>) -> Arc<dyn Any + Send + Sync> {
+        self
+    }
+
     fn to_data(&self) -> ArrayData {
         self.clone().into()
     }
@@ -117,12 +121,12 @@ impl Array for NullArray {
         (self.len != 0).then(|| NullBuffer::new_null(self.len))
     }
 
-    fn is_nullable(&self) -> bool {
-        !self.is_empty()
-    }
-
     fn logical_null_count(&self) -> usize {
         self.len
+    }
+
+    fn is_nullable(&self) -> bool {
+        !self.is_empty()
     }
 
     fn get_buffer_memory_size(&self) -> usize {

@@ -1158,6 +1158,10 @@ impl<T: ArrowPrimitiveType> Array for PrimitiveArray<T> {
         self
     }
 
+    fn into_any(self: Arc<Self>) -> Arc<dyn Any + Send + Sync> {
+        self
+    }
+
     fn to_data(&self) -> ArrayData {
         self.clone().into()
     }

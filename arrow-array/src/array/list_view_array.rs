@@ -367,6 +367,10 @@ impl<OffsetSize: OffsetSizeTrait> Array for GenericListViewArray<OffsetSize> {
         self
     }
 
+    fn into_any(self: Arc<Self>) -> Arc<dyn Any + Send + Sync> {
+        self
+    }
+
     fn to_data(&self) -> ArrayData {
         self.clone().into()
     }
